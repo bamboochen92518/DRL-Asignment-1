@@ -99,7 +99,7 @@ def get_action(obs):
 
     direction = (taxi_row - target[0], taxi_col - target[1])
     
-    scale = 2
+    scale = 4
     if direction[0] > 0:
         action_prob[1] *= scale
     if direction[0] < 0:
