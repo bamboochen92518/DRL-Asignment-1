@@ -127,4 +127,15 @@ def get_action(obs):
     
     action_prob = softmax(policy_table[state])
     
+    if obstacle_south:
+        action_prob[0] = 0
+    if obstacle_north:
+        action_prob[1] = 0
+    if obstacle_east:
+        action_prob[2] = 0
+    if obstacle_west:
+        action_prob[3] = 0
+
+    action_prob = action_prob / action_prob.sum()
+    
     return np.random.choice(len(action_prob), p=action_prob) # Choose a random action
