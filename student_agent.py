@@ -76,7 +76,7 @@ def my_state(obs):
     
     # Not Arrive Yet
     if direction != (0, 0):
-        return direction, reward
+        return direction, reward, obstacle_north, obstacle_south, obstacle_east, obstacle_west
     
     # Arrive
     reward = 1
@@ -84,44 +84,47 @@ def my_state(obs):
     # Passenger is not picked yet
     if not is_picked:
         if passenger_look:
+            direction = 4
             is_picked = True
             visited['R'] = 1
             visited['G'] = 1
             visited['Y'] = 1
             visited['B'] = 1
             visited[on_location()] += 1
-            return 4, reward
+            return direction, reward, obstacle_north, obstacle_south, obstacle_east, obstacle_west
         else:
             if destination_look:
                 destination = on_location()
             visited[on_location()] = 1
             next_target = determine_target()
             direction = (taxi_row - next_target[0], taxi_col - next_target[1])
-            return direction, reward
+            return direction, reward, obstacle_north, obstacle_south, obstacle_east, obstacle_west
 
     # Passenger is picked
     if destination_look:
-        return 5, reward
+        direction = 5
+        return direction, reward, obstacle_north, obstacle_south, obstacle_east, obstacle_west
 
     visited[on_location()] += 1
     next_target = determine_target()
     direction = (taxi_row - next_target[0], taxi_col - next_target[1])
-    return direction, reward
+    return direction, reward, obstacle_north, obstacle_south, obstacle_east, obstacle_west
 
 
 def get_action(obs):
-    direction, _ = my_state(obs)
+    direction, _, obstacle_north, obstacle_south, obstacle_east, obstacle_west = my_state(obs)
+
     if isinstance(direction, int):
         return direction
 
     while abs(direction[0]) > 4 or abs(direction[1]) > 4:
         direction = (direction[0] // 2, direction[1] // 2)
     
-    direction = str(direction)
+    state = str((direction[0], direction[1], obstacle_north, obstacle_south, obstacle_east, obstacle_west))
 
     with open('policy.json', 'r') as f:
         policy_table = json.load(f)
     
-    action_prob = softmax(policy_table[direction])
+    action_prob = softmax(policy_table[state])
     
     return np.random.choice(len(action_prob), p=action_prob) # Choose a random action

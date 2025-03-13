@@ -4,6 +4,7 @@ import importlib.util
 import numpy as np
 import json
 from simple_custom_taxi_env import SimpleTaxiEnv
+from save_policy_table import save_policy_table
 
 
 def generate_random_map():
@@ -32,7 +33,7 @@ def train(episodes=2000, alpha=0.1, gamma=0.99):
         # print(f'=== Episode {episode + 1} ===')
         env = generate_random_map()
         obs, _ = env.reset()
-        state, _ = student_agent.my_state(obs)
+        state, _, _, _, _, _ = student_agent.my_state(obs)
         done = False
         total_reward = 0
         trajectory = []
@@ -54,19 +55,13 @@ def train(episodes=2000, alpha=0.1, gamma=0.99):
                 action = np.random.choice([0, 1, 2, 3], p=action_probs)
 
             obs, _, done, _ = env.step(action)
-            next_state, reward = student_agent.my_state(obs)
+            next_state, reward, _, _, _, _ = student_agent.my_state(obs)
             total_reward += reward
 
             if not isinstance(state, int):
                 trajectory.append((state, action, reward))
 
             if reward == 1:
-                # Test Only
-                # print('--------')
-                # for t in trajectory:
-                    # print(t[0], env.get_action_name(t[1]), t[2])
-
-                # del trajectory[0]
                 G = 0  # Return (discounted sum of rewards)
                 for t in reversed(range(len(trajectory))):
                     s, a, r = trajectory[t]
@@ -93,8 +88,4 @@ def train(episodes=2000, alpha=0.1, gamma=0.99):
 
 if __name__ == "__main__":
     policy_table, rewards = train()
-    new_table = dict()
-    for state in policy_table.keys():
-        new_table[str(state)] = policy_table[state].tolist()
-    with open('policy.json', 'w') as f:
-        json.dump(new_table, f, indent=4)
+    save_policy_table(policy_table)
