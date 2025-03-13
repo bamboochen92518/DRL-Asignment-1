@@ -1,6 +1,6 @@
 # Remember to adjust your student ID in meta.xml
 import numpy as np
-import pickle
+import json
 import random
 import gym
 
@@ -111,15 +111,17 @@ def my_state(obs):
 
 def get_action(obs):
     direction, _ = my_state(obs)
-    if direction == 4 or direction == 5:
+    if isinstance(direction, int):
         return direction
 
-    with open('policy.pkl', 'rb') as f:
-        policy_table = pickle.load(f)
-    
-    while direction not in policy_table.keys():
+    while abs(direction[0]) > 4 or abs(direction[1]) > 4:
         direction = (direction[0] // 2, direction[1] // 2)
+    
+    direction = str(direction)
 
+    with open('policy.json', 'r') as f:
+        policy_table = json.load(f)
+    
     action_prob = softmax(policy_table[direction])
     
     return np.random.choice(len(action_prob), p=action_prob) # Choose a random action

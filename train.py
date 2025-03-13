@@ -2,7 +2,7 @@ import math
 import random
 import importlib.util
 import numpy as np
-import pickle
+import json
 from simple_custom_taxi_env import SimpleTaxiEnv
 
 
@@ -16,7 +16,7 @@ def generate_random_map():
     return env
 
 
-def train(episodes=5000, alpha=0.1, gamma=0.99):
+def train(episodes=2000, alpha=0.1, gamma=0.99):
     spec = importlib.util.spec_from_file_location("student_agent", "student_agent.py")
     student_agent = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(student_agent)
@@ -43,7 +43,7 @@ def train(episodes=5000, alpha=0.1, gamma=0.99):
         student_agent.destination = None
 
         while not done:
-            if state == 4 or state == 5:
+            if isinstance(state, int):
                 action = state
 
             else:
@@ -57,7 +57,7 @@ def train(episodes=5000, alpha=0.1, gamma=0.99):
             next_state, reward = student_agent.my_state(obs)
             total_reward += reward
 
-            if state not in [4, 5]:
+            if not isinstance(state, int):
                 trajectory.append((state, action, reward))
 
             if reward == 1:
@@ -93,5 +93,8 @@ def train(episodes=5000, alpha=0.1, gamma=0.99):
 
 if __name__ == "__main__":
     policy_table, rewards = train()
-    with open('policy.pkl', 'wb') as f:
-        pickle.dump(policy_table, f)
+    new_table = dict()
+    for state in policy_table.keys():
+        new_table[str(state)] = policy_table[state].tolist()
+    with open('policy.json', 'w') as f:
+        json.dump(new_table, f, indent=4)
