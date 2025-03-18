@@ -133,7 +133,7 @@ def get_action(obs):
     if isinstance(direction, int):
         return direction
 
-    while abs(direction[0]) > 9 or abs(direction[1]) > 9:
+    while abs(direction[0]) > 4 or abs(direction[1]) > 4:
         direction = (direction[0] // 2, direction[1] // 2)
     
     state = str((direction, obstacle_north, obstacle_south, obstacle_east, obstacle_west))
@@ -144,7 +144,7 @@ def get_action(obs):
     if state not in policy_table.keys():
         prob = np.zeros(4)
         cnt = 0
-        for x, y in itertools.product(range(-9, 10), repeat=2):
+        for x, y in itertools.product(range(-4, 4), repeat=2):
             if x * direction[0] < 0 or y * direction[1] < 0:
                 continue
             ns = ((x, y), obstacle_north, obstacle_south, obstacle_east, obstacle_west)
