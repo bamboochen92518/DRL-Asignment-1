@@ -86,6 +86,8 @@ def train(episodes=16800, alpha=0.1, gamma=0.99):
             next_state, reward, no1, no2, no3, no4 = student_agent.my_state(obs)
             next_state = (next_state, no1, no2, no3, no4)
 
+            if sys_reward == -5:
+                reward = -1
 
             if not isinstance(state[0], int):
                 trajectory.append((state, action, reward))
