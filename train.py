@@ -38,7 +38,7 @@ def generate_random_map():
     return env
 
 
-def train(episodes=36800, alpha=0.1, gamma=0.99):
+def train(episodes=36888, alpha=0.1, gamma=0.99):
     spec = importlib.util.spec_from_file_location("student_agent", "student_agent.py")
     student_agent = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(student_agent)
