@@ -1,6 +1,8 @@
 # Remember to adjust your student ID in meta.xml
 import numpy as np
 import json
+import random
+import gym
 import itertools
 
 
@@ -8,7 +10,7 @@ is_picked = False
 visited = {"R": 0, "G": 0, "Y": 0, "B": 0}
 destination = None
 DEBUG = False
-np.random.seed(42)
+random.seed(42)
 
 
 def softmax(x):
@@ -159,4 +161,4 @@ def get_action(obs):
     else:
         action_prob = softmax(policy_table[state])
 
-    return np.random.choice(len(action_prob), p=action_prob)
+    return random.choices(range(len(action_prob)), weights=action_prob, k=1)[0]
